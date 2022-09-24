@@ -10,4 +10,5 @@ public:
     bool broken = false;
     LinkConstraint(PointMass pA, PointMass pB, double restingDistance, double strength);
     LinkConstraint();
+    ~LinkConstraint();
 };

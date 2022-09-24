@@ -8,6 +8,7 @@ public:
 
    Vec2();
    Vec2(double X, double Y);
+   Vec2(const Vec2& rhs);
 
    friend Vec2 operator+(const Vec2 &left, const Vec2 &right);
    friend Vec2 operator-(const Vec2 &left, const Vec2 &right);

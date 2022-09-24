@@ -1,7 +1,11 @@
+
+
 #pragma once
 #include <vector>
 #include "pointmass.h"
 #include "constraints.h"
+#include "util.h"
+
 
 class Entity
 {
@@ -10,6 +14,9 @@ public:
     std::vector<LinkConstraint> links;
 
     Entity();
+    ~Entity();
+
+    void update(double dt);
 };
 
 class Cloth : public Entity
@@ -27,4 +34,6 @@ public:
     ~Cloth();
 
     void initParticlesAndLinks(bool firstNeighbor, bool secondNeighbor, bool thirdNeighbor);
+    void applyForces(const double gravity, const double friction);
 };
+

@@ -10,6 +10,12 @@ Vec2::Vec2()
 {
 }
 
+Vec2::Vec2(const Vec2 &rhs)
+{
+    this->x = rhs.x;
+    this->y = rhs.y;
+}
+
 Vec2 operator+(const Vec2 &left, const Vec2 &right)
 {
     return Vec2(left.x + right.x, left.y + right.y);

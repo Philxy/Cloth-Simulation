@@ -10,3 +10,4 @@ LinkConstraint::LinkConstraint(PointMass pA, PointMass pB, double restingDistanc
 }
 
 LinkConstraint::LinkConstraint() {}
+LinkConstraint::~LinkConstraint() {}

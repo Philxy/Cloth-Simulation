@@ -1,7 +1,5 @@
 #include "../include/util.h"
 
-
-
 void applyGravity(PointMass &p, const double gravStrength)
 {
     p.acceleration.y += gravStrength;
@@ -9,18 +7,20 @@ void applyGravity(PointMass &p, const double gravStrength)
 
 double distance(const PointMass &p1, const PointMass &p2)
 {
-    return sqrt((p1.position - p2.position) * (p1.position - p2.position) + (p1.position - p2.position) * (p1.position - p2.position));
+    return sqrt((p1.position.x - p2.position.x) * (p1.position.x - p2.position.x) + (p1.position.y - p2.position.y) * (p1.position.y - p2.position.y));
 }
 
 void applyDamping(LinkConstraint &link)
 {
-    PointMass &partA = link.partA;
-    PointMass &partB = link.partB;
+    PointMass &partA = *link.partA_ptr;
+    PointMass &partB = *link.partB_ptr;
     double d = distance(partA, partB);
-    partA.acceleration.x = partA.acceleration.x - (partA.position.x - partB.position.x) * (link.strength * (d - link.restingDistance) / d);
-    partA.acceleration.y = partA.acceleration.y - (partA.position.y - partB.position.y) * (link.strength * (d - link.restingDistance) / d);
-    partB.acceleration.x -= partA.acceleration.x;
-    partB.acceleration.y -= partA.acceleration.y;
+
+    partA.acceleration.x -= (partA.position.x - partB.position.x) * (link.strength * (d - link.restingDistance) / d);
+    partA.acceleration.y -= (partA.position.y - partB.position.y) * (link.strength * (d - link.restingDistance) / d);
+    partB.acceleration.x = -partA.acceleration.x;
+    partB.acceleration.y = -partA.acceleration.y;
+    //std::cout << partA.acceleration.y << std::endl;
 }
 
 bool approaching(const PointMass &p1, const PointMass &p2)
@@ -78,7 +78,5 @@ void drawCloth(sf::RenderWindow &window, Cloth &cloth, const double scaling)
 
     for (LinkConstraint &link : cloth.links)
     {
-
     }
-
 }

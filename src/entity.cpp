@@ -29,6 +29,7 @@ void Cloth::applyForces(const double gravity, const double friction)
 
     for (LinkConstraint &link : this->links)
     {
+        std::cout << (*link.partA_ptr).velocity.y << std::endl;
         applyDamping(link);
     }
 }
@@ -42,28 +43,26 @@ void Cloth::initParticlesAndLinks(bool firstNeighbor, bool secondNeighbor, bool 
         return;
     }
 
-    PointMass *grid[this->width][this->height];
-
-    std::cout << "\n"
-              << std::endl;
-    int counter = 0;
+    std::vector<std::vector<PointMass>> grid_vec(this->width, std::vector<PointMass>(this->height));
 
     for (int widthIndex = 0; widthIndex < this->width; widthIndex++)
     {
         for (int heightIndex = 0; heightIndex < this->height; heightIndex++)
         {
-            PointMass p = *new PointMass();
+
+            PointMass &p = grid_vec.at(heightIndex).at(widthIndex);
 
             // hold top of the cloth in place
             if (heightIndex == 0)
             {
                 p.fixed = true;
             }
-
-            p.position = *new Vec2(topLeftX + widthIndex * this->restingDistance, topLeftY + heightIndex * this->restingDistance);
-            p.velocity = *new Vec2(0, 0);
-            p.acceleration = *new Vec2(0, 0);
-            grid[widthIndex][heightIndex] = &p;
+            p.position.x = topLeftX + widthIndex * this->restingDistance;
+            p.position.y = topLeftY + heightIndex * this->restingDistance;
+            p.velocity.x = 0;
+            p.velocity.y = 0;
+            p.acceleration.x = 0;
+            p.acceleration.y = 0;
             this->particles.push_back(p);
         }
     }
@@ -73,9 +72,9 @@ void Cloth::initParticlesAndLinks(bool firstNeighbor, bool secondNeighbor, bool 
     {
         for (int heightIndex = 0; heightIndex < this->height - 1; heightIndex++)
         {
-            PointMass &currP = *grid[widthIndex][heightIndex];
-            PointMass &rightP = *grid[widthIndex + 1][heightIndex];
-            PointMass &lowerP = *grid[widthIndex][heightIndex + 1];
+            PointMass *currP = &grid_vec.at(heightIndex).at(widthIndex);
+            PointMass *rightP = &grid_vec.at(heightIndex).at(widthIndex + 1);
+            PointMass *lowerP = &grid_vec.at(heightIndex + 1).at(widthIndex);
             LinkConstraint rightLink1 = *new LinkConstraint(currP, rightP, this->restingDistance, this->linkStrengthFirstNeighbor);
             LinkConstraint lowerLink1 = *new LinkConstraint(currP, lowerP, this->restingDistance, this->linkStrengthFirstNeighbor);
             this->links.push_back(lowerLink1);
@@ -88,14 +87,15 @@ void Cloth::initParticlesAndLinks(bool firstNeighbor, bool secondNeighbor, bool 
         return;
     }
 
+    /*
     // init 2nd order links
     for (int widthIndex = 0; widthIndex < this->width - 2; widthIndex += 2)
     {
         for (int heightIndex = 0; heightIndex < this->height - 2; heightIndex += 2)
         {
-            PointMass &currP = *grid[widthIndex][heightIndex];
-            PointMass &rightP = *grid[widthIndex + 2][heightIndex];
-            PointMass &lowerP = *grid[widthIndex][heightIndex + 2];
+            PointMass &currP = grid_vec.at(heightIndex).at(widthIndex);
+            PointMass &rightP = grid_vec.at(heightIndex).at(widthIndex + 2);
+            PointMass &lowerP = grid_vec.at(heightIndex + 2).at(widthIndex);
             LinkConstraint rightLink1 = *new LinkConstraint(currP, rightP, this->restingDistance * 2, this->linkStrengthSecondNeighbor);
             LinkConstraint lowerLink1 = *new LinkConstraint(currP, lowerP, this->restingDistance * 2, this->linkStrengthSecondNeighbor);
             this->links.push_back(lowerLink1);
@@ -113,13 +113,14 @@ void Cloth::initParticlesAndLinks(bool firstNeighbor, bool secondNeighbor, bool 
     {
         for (int heightIndex = 0; heightIndex < this->height - 3; heightIndex += 3)
         {
-            PointMass &currP = *grid[widthIndex][heightIndex];
-            PointMass &rightP = *grid[widthIndex + 3][heightIndex];
-            PointMass &lowerP = *grid[widthIndex][heightIndex + 3];
+            PointMass &currP = grid_vec.at(heightIndex).at(widthIndex);
+            PointMass &rightP = grid_vec.at(heightIndex).at(widthIndex + 3);
+            PointMass &lowerP = grid_vec.at(heightIndex + 3).at(widthIndex);
             LinkConstraint rightLink1 = *new LinkConstraint(currP, rightP, this->restingDistance * 3, this->linkStrengthThirdNeighbor);
             LinkConstraint lowerLink1 = *new LinkConstraint(currP, lowerP, this->restingDistance * 3, this->linkStrengthThirdNeighbor);
             this->links.push_back(lowerLink1);
             this->links.push_back(rightLink1);
         }
     }
+    */
 }

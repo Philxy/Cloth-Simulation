@@ -23,6 +23,6 @@ void PointMass::update(double dt)
     Vec2 temp = *(new Vec2(this->position)); // r_n
     this->position = ((this->position * 2.0) - this->positionOld) + (this->acceleration * (dt * dt)); // r_n+1
     this->velocity = (this->position - this->positionOld) * (1.0 / (2.0 * dt));
-    std::cout << this->acceleration.y;
+    //std::cout << this->acceleration.y;
     this->positionOld = *(new Vec2(temp)); // r_n-1 -> r_n
 }

@@ -12,6 +12,7 @@ public:
     PointMass(Vec2 position, Vec2 velocity, Vec2 acceleration);
     PointMass();
     ~PointMass();
+    void firstIntegration(double dt);
     void update(double dt);
 };
 

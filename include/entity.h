@@ -8,13 +8,14 @@
 class Entity
 {
 public:
-    std::vector<PointMass> particles;
-    std::vector<LinkConstraint> links;
+    std::vector<PointMass*> particles;
+    std::vector<LinkConstraint*> links;
 
     Entity();
     ~Entity();
 
     void update(double dt);
+    void firstIntegration(double dt);
 };
 
 class Cloth : public Entity

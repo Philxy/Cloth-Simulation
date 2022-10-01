@@ -6,7 +6,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
-double distance(const PointMass &p1, const PointMass &p2);
+double distance( PointMass *p1,  PointMass *p2);
 void applyGravity(PointMass &p, const double gravStrength);
 void applyAirFriction(PointMass &p, const double frictionCoef);
 void applyDamping(LinkConstraint &link);

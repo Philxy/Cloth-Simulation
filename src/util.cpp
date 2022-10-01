@@ -5,23 +5,25 @@ void applyGravity(PointMass &p, const double gravStrength)
     p.acceleration.y += gravStrength;
 }
 
-double distance(const PointMass &p1, const PointMass &p2)
+double distance(PointMass *p1, PointMass *p2)
 {
-    return sqrt((p1.position.x - p2.position.x) * (p1.position.x - p2.position.x) + (p1.position.y - p2.position.y) * (p1.position.y - p2.position.y));
+    return sqrt((p1->position.x - p2->position.x) * (p1->position.x - p2->position.x) + (p1->position.y - p2->position.y) * (p1->position.y - p2->position.y));
 }
 
 void applyDamping(LinkConstraint &link)
 {
-    PointMass &partA = *link.partA_ptr;
-    PointMass &partB = *link.partB_ptr;
+    PointMass *partA = (link.partA_ptr);
+    PointMass *partB = (link.partB_ptr);
     double d = distance(partA, partB);
 
-    partA.acceleration.x -= (partA.position.x - partB.position.x) * (link.strength * (d - link.restingDistance) / d);
-    partA.acceleration.y -= (partA.position.y - partB.position.y) * (link.strength * (d - link.restingDistance) / d);
-    partB.acceleration.x = -partA.acceleration.x;
-    partB.acceleration.y = -partA.acceleration.y;
-    //std::cout << partA.acceleration.y << std::endl;
+    partA->acceleration.x -= (partA->position.x - partB->position.x) * (link.strength * (d - link.restingDistance) / d);
+    partA->acceleration.y -= (partA->position.y - partB->position.y) * (link.strength * (d - link.restingDistance) / d);
+    partB->acceleration.x -= (partB->position.x - partA->position.x) * (link.strength * (d - link.restingDistance) / d);
+    partB->acceleration.y -= (partB->position.y - partA->position.y) * (link.strength * (d - link.restingDistance) / d);
 }
+
+
+
 
 bool approaching(const PointMass &p1, const PointMass &p2)
 {
@@ -38,7 +40,7 @@ void resolveCollision(PointMass &p1, PointMass &p2)
     }
     double m1 = p1.m;
     double m2 = p2.m;
-    double d = distance(p1, p2);
+    double d = distance(&p1, &p2);
     if (d < .001)
     {
         return;
@@ -61,22 +63,22 @@ double convertPositionToScreen(const double pos)
 
 void applyAirFriction(PointMass &p, const double friction)
 {
-    p.velocity.x -= p.velocity.x * friction;
-    p.velocity.y -= p.velocity.x * friction;
+    p.acceleration.x -= p.velocity.x * friction;
+    p.acceleration.y -= p.velocity.x * friction;
 }
 
 void drawCloth(sf::RenderWindow &window, Cloth &cloth, const double scaling)
 {
-    for (PointMass &p : cloth.particles)
+    for (PointMass *p : cloth.particles)
     {
         sf::CircleShape circle;
         circle.setFillColor(sf::Color::White);
         circle.setRadius(.1 * scaling);
-        circle.setPosition(p.position.x * scaling, p.position.y * scaling);
+        circle.setPosition(p->position.x * scaling, p->position.y * scaling);
         window.draw(circle);
     }
 
-    for (LinkConstraint &link : cloth.links)
+    for (LinkConstraint *link : cloth.links)
     {
     }
 }

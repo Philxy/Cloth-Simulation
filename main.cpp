@@ -7,25 +7,27 @@ int main()
     // window size and rendering
     const int windowSizeX = 1000;
     const int windowSizeY = 1000;
-    const double scaling = 100;
+    const double scaling = 20;
 
     // simulatopn parameters
     const double gravity = 1;
-    const double friction = 1;
+    const double friction = 1000;
     double dt = 0.01;
 
     // cloth parameters
     Cloth cloth;
-    cloth.width = 10;
-    cloth.height = 10;
+    cloth.width = 50;
+    cloth.height = 50;
     cloth.topLeftX = 0;
     cloth.topLeftY = 0;
     cloth.restingDistance = 1;
-    cloth.linkStrengthFirstNeighbor = 1000;
+    cloth.linkStrengthFirstNeighbor = 100;
     cloth.linkStrengthSecondNeighbor = 1;
     cloth.linkStrengthThirdNeighbor = 1;
-
     cloth.initParticlesAndLinks(true, false, false);
+    cloth.applyForces(gravity, friction);
+    cloth.firstIntegration(dt);
+
 
     sf::RenderWindow window(sf::VideoMode(windowSizeX, windowSizeY), "SFML window");
     sf::Clock clock;

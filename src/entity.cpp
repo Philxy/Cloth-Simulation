@@ -78,13 +78,20 @@ void Cloth::initParticlesAndLinks(bool firstNeighbor, bool secondNeighbor, bool 
         for (int heightIndex = 0; heightIndex < this->height - 1; heightIndex++)
         {
             PointMass *currP = grid[widthIndex][heightIndex];
-            PointMass *rightP = grid[widthIndex][heightIndex+1];
-            PointMass *lowerP = grid[widthIndex+1][heightIndex];
+            PointMass *rightP = grid[widthIndex+1][heightIndex];
+            PointMass *lowerP = grid[widthIndex][heightIndex+1];
             LinkConstraint *rightLink1 = new LinkConstraint(currP, rightP, this->restingDistance, this->linkStrengthFirstNeighbor);
             LinkConstraint *lowerLink1 = new LinkConstraint(currP, lowerP, this->restingDistance, this->linkStrengthFirstNeighbor);
             this->links.push_back(lowerLink1);
             this->links.push_back(rightLink1);
         }
+    }
+    for (int heightIndex = 0; heightIndex < this->height - 1; heightIndex++)
+    {
+            PointMass *currP = grid[this->width-1][heightIndex];
+            PointMass *lowerP = grid[this->width-1][heightIndex+1];
+            LinkConstraint *lowerLink1 = new LinkConstraint(currP, lowerP, this->restingDistance, this->linkStrengthFirstNeighbor);
+            this->links.push_back(lowerLink1);
     }
     /*
     for (int widthIndex = this->width - 1; widthIndex > 0; widthIndex--)

@@ -7,17 +7,17 @@ int main()
     // window size and rendering
     const int windowSizeX = 1000;
     const int windowSizeY = 1000;
-    const double scaling = 20;
+    const double scaling = 50;
 
     // simulatopn parameters
     const double gravity = 1;
-    const double friction = 1000;
+    const double friction = 1;
     double dt = 0.01;
 
     // cloth parameters
     Cloth cloth;
-    cloth.width = 50;
-    cloth.height = 50;
+    cloth.width = 20;
+    cloth.height = 10;
     cloth.topLeftX = 0;
     cloth.topLeftY = 0;
     cloth.restingDistance = 1;
@@ -44,7 +44,7 @@ int main()
 
         sf::Time elapsed = clock.restart();
         dt = elapsed.asSeconds();
-
+        std::cout << "FPS: " << 1/dt << std::endl;
 
         cloth.applyForces(gravity, friction);
         cloth.update(dt);

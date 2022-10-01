@@ -64,7 +64,7 @@ double convertPositionToScreen(const double pos)
 void applyAirFriction(PointMass &p, const double friction)
 {
     p.acceleration.x -= p.velocity.x * friction;
-    p.acceleration.y -= p.velocity.x * friction;
+    p.acceleration.y -= p.velocity.y * friction;
 }
 
 void drawCloth(sf::RenderWindow &window, Cloth &cloth, const double scaling)

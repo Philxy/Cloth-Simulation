@@ -22,9 +22,9 @@ int main()
     cloth.topLeftY = 0;
     cloth.restingDistance = 1;
     cloth.linkStrengthFirstNeighbor = 100;
-    cloth.linkStrengthSecondNeighbor = 1;
+    cloth.linkStrengthSecondNeighbor = 10;
     cloth.linkStrengthThirdNeighbor = 1;
-    cloth.initParticlesAndLinks(true, false, false);
+    cloth.initParticlesAndLinks();
     cloth.applyForces(gravity, friction);
     cloth.firstIntegration(dt);
 

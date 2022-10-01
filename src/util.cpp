@@ -22,9 +22,6 @@ void applyDamping(LinkConstraint &link)
     partB->acceleration.y -= (partB->position.y - partA->position.y) * (link.strength * (d - link.restingDistance) / d);
 }
 
-
-
-
 bool approaching(const PointMass &p1, const PointMass &p2)
 {
     Vec2 r21 = p2.position - p1.position;
@@ -80,5 +77,16 @@ void drawCloth(sf::RenderWindow &window, Cloth &cloth, const double scaling)
 
     for (LinkConstraint *link : cloth.links)
     {
+
+        PointMass *p1 = link->partA_ptr;
+        PointMass *p2 = link->partB_ptr;
+        sf::Vertex line[] =
+            {
+                sf::Vertex(sf::Vector2f(p1->position.x * scaling, p1->position.y * scaling)),
+                sf::Vertex(sf::Vector2f(p2->position.x * scaling, p2->position.y * scaling))};
+        line[0].color = (sf::Color(255, 255, 255));
+        line[1].color = (sf::Color(255, 255, 255));
+
+        window.draw(line, 2, sf::Lines);
     }
 }

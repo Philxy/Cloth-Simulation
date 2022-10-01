@@ -17,7 +17,6 @@ void Entity::update(double dt)
     }
 }
 
-
 void Entity::firstIntegration(double dt)
 {
     for (PointMass *p : this->particles)
@@ -42,19 +41,17 @@ void Cloth::applyForces(const double gravity, const double friction)
     }
 }
 
-
-
 // Initializes all particles as well as the links of first, second and third order
-void Cloth::initParticlesAndLinks(bool firstNeighbor, bool secondNeighbor, bool thirdNeighbor)
+void Cloth::initParticlesAndLinks()
 {
 
-    PointMass* grid[width][height];
+    PointMass *grid[width][height];
 
     for (int widthIndex = 0; widthIndex < this->width; widthIndex++)
     {
         for (int heightIndex = 0; heightIndex < this->height; heightIndex++)
         {
-            PointMass* p = new PointMass();
+            PointMass *p = new PointMass();
             grid[widthIndex][heightIndex] = p;
 
             // hold top of the cloth in place
@@ -77,22 +74,60 @@ void Cloth::initParticlesAndLinks(bool firstNeighbor, bool secondNeighbor, bool 
     {
         for (int heightIndex = 0; heightIndex < this->height - 1; heightIndex++)
         {
+            // 1st order links
             PointMass *currP = grid[widthIndex][heightIndex];
-            PointMass *rightP = grid[widthIndex+1][heightIndex];
-            PointMass *lowerP = grid[widthIndex][heightIndex+1];
-            LinkConstraint *rightLink1 = new LinkConstraint(currP, rightP, this->restingDistance, this->linkStrengthFirstNeighbor);
-            LinkConstraint *lowerLink1 = new LinkConstraint(currP, lowerP, this->restingDistance, this->linkStrengthFirstNeighbor);
+            PointMass *rightP1 = grid[widthIndex + 1][heightIndex];
+            PointMass *lowerP1 = grid[widthIndex][heightIndex + 1];
+            LinkConstraint *rightLink1 = new LinkConstraint(currP, rightP1, this->restingDistance, this->linkStrengthFirstNeighbor);
+            LinkConstraint *lowerLink1 = new LinkConstraint(currP, lowerP1, this->restingDistance, this->linkStrengthFirstNeighbor);
             this->links.push_back(lowerLink1);
             this->links.push_back(rightLink1);
         }
     }
+    // 1st order edges
     for (int heightIndex = 0; heightIndex < this->height - 1; heightIndex++)
     {
-            PointMass *currP = grid[this->width-1][heightIndex];
-            PointMass *lowerP = grid[this->width-1][heightIndex+1];
-            LinkConstraint *lowerLink1 = new LinkConstraint(currP, lowerP, this->restingDistance, this->linkStrengthFirstNeighbor);
-            this->links.push_back(lowerLink1);
+        PointMass *currP = grid[this->width - 1][heightIndex];
+        PointMass *lowerP1 = grid[this->width - 1][heightIndex + 1];
+        LinkConstraint *lowerLink1 = new LinkConstraint(currP, lowerP1, this->restingDistance, this->linkStrengthFirstNeighbor);
+        this->links.push_back(lowerLink1);
     }
+    for (int widthIndex = 0; widthIndex < this->width - 1; widthIndex++)
+    {
+        PointMass *currP = grid[widthIndex][this->height - 1];
+        PointMass *rightP1 = grid[widthIndex + 1][this->height - 1];
+        LinkConstraint *lowerLink1 = new LinkConstraint(currP, rightP1, this->restingDistance, this->linkStrengthFirstNeighbor);
+        this->links.push_back(lowerLink1);
+    }
+
+    // 2nd order links
+    for (int widthIndex = 0; widthIndex < this->width - 1; widthIndex++)
+    {
+        for (int heightIndex = 0; heightIndex < this->height - 1; heightIndex++)
+        {
+            PointMass *currP = grid[widthIndex][heightIndex];
+            PointMass *rightP2 = grid[widthIndex + 1][heightIndex + 1];
+            PointMass *lowerP2 = grid[widthIndex + 1][heightIndex + 1];
+            LinkConstraint *rightLink2 = new LinkConstraint(currP, rightP2, this->restingDistance * 1.41, this->linkStrengthSecondNeighbor);
+            LinkConstraint *lowerLink2 = new LinkConstraint(currP, lowerP2, this->restingDistance * 1.41, this->linkStrengthSecondNeighbor);
+            this->links.push_back(lowerLink2);
+            this->links.push_back(rightLink2);
+        }
+    }
+    for (int widthIndex = this->width - 1; widthIndex > 0; widthIndex--)
+    {
+        for (int heightIndex = 0; heightIndex < this->height-1; heightIndex++)
+        {
+            PointMass *currP = grid[widthIndex][heightIndex];
+            PointMass *leftP2 = grid[widthIndex - 1][heightIndex + 1];
+            PointMass *upperP2 = grid[widthIndex - 1][heightIndex + 1];
+            LinkConstraint *leftLink2 = new LinkConstraint(currP, leftP2, this->restingDistance * 1.41, this->linkStrengthSecondNeighbor);
+            LinkConstraint *upperLink2 = new LinkConstraint(currP, upperP2, this->restingDistance * 1.41, this->linkStrengthSecondNeighbor);
+            this->links.push_back(leftLink2);
+            this->links.push_back(upperLink2);
+        }
+    }
+
     /*
     for (int widthIndex = this->width - 1; widthIndex > 0; widthIndex--)
     {
@@ -109,11 +144,6 @@ void Cloth::initParticlesAndLinks(bool firstNeighbor, bool secondNeighbor, bool 
         }
     }
     */
-
-    if (!secondNeighbor)
-    {
-        return;
-    }
 
     /*
     // init 2nd order links

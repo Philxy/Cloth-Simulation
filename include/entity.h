@@ -32,7 +32,7 @@ public:
     Cloth();
     ~Cloth();
 
-    void initParticlesAndLinks(bool firstNeighbor, bool secondNeighbor, bool thirdNeighbor);
+    void initParticlesAndLinks();
     void applyForces(const double gravity, const double friction);
 };
 

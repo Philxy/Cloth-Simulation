@@ -3,19 +3,22 @@
 #include "pointmass.h"
 #include "constraints.h"
 #include "util.h"
+#include <map>
 
 
 class Entity
 {
 public:
-    std::vector<PointMass*> particles;
-    std::vector<LinkConstraint*> links;
+    std::vector<PointMass *> particles;
+    std::vector<LinkConstraint *> links;
+    std::map<PointMass *, std::vector<LinkConstraint *>> linksForEachPointMass;
 
     Entity();
     ~Entity();
 
     void update(double dt);
     void firstIntegration(double dt);
+    void initLinksForEachPointMass();
 };
 
 class Cloth : public Entity
@@ -35,4 +38,3 @@ public:
     void initParticlesAndLinks();
     void applyForces(const double gravity, const double friction);
 };
-

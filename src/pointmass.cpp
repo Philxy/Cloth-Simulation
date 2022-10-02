@@ -18,7 +18,6 @@ void PointMass::update(double dt)
     //this->position.y += this->velocity.y * dt;
     //this->velocity.x += this->acceleration.x * dt;
     //this->velocity.y += this->acceleration.y * dt;
-    //return;
     
     double x_n = this->position.x; // x_n
     double y_n = this->position.y; // y_n
@@ -35,6 +34,6 @@ void PointMass::firstIntegration(double dt)
 {  
     this->positionOld.x = this->position.x;
     this->positionOld.y = this->position.y;
-    this->position.x = this->position.x + this->velocity.x * dt + .5* dt * dt * this->acceleration.x;
-    this->position.y = this->position.y + this->velocity.y * dt + .5* dt * dt * this->acceleration.y;
+    this->position.x = this->positionOld.x + this->velocity.x * dt + .5* dt * dt * this->acceleration.x;
+    this->position.y = this->positionOld.y + this->velocity.y * dt + .5* dt * dt * this->acceleration.y;
 }

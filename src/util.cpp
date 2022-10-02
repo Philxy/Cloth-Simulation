@@ -10,11 +10,24 @@ double distance(PointMass *p1, PointMass *p2)
     return sqrt((p1->position.x - p2->position.x) * (p1->position.x - p2->position.x) + (p1->position.y - p2->position.y) * (p1->position.y - p2->position.y));
 }
 
+double distance(const Vec2 &vecA, const Vec2 &vecB)
+{
+    return sqrt((vecA.x - vecB.x) * (vecA.x - vecB.x) + (vecA.y - vecB.y) * (vecA.y - vecB.y));
+}
+
 void applyDamping(LinkConstraint &link)
 {
     PointMass *partA = (link.partA_ptr);
     PointMass *partB = (link.partB_ptr);
     double d = distance(partA, partB);
+    
+    
+    if ( link.restingDistance * 10 < d)
+    {
+        link.broken = true;
+        return;
+    }
+    
 
     partA->acceleration.x -= (partA->position.x - partB->position.x) * (link.strength * (d - link.restingDistance) / d);
     partA->acceleration.y -= (partA->position.y - partB->position.y) * (link.strength * (d - link.restingDistance) / d);
@@ -53,19 +66,61 @@ void resolveCollision(PointMass &p1, PointMass &p2)
     p2.velocity = p2.velocity + (p2.position - p1.position) * temp2;
 }
 
-double convertPositionToScreen(const double pos)
-{
-    return 0;
-}
-
 void applyAirFriction(PointMass &p, const double friction)
 {
     p.acceleration.x -= p.velocity.x * friction;
     p.acceleration.y -= p.velocity.y * friction;
 }
 
+double distanceOfPointToLine(Vec2 lineStart, Vec2 lineEnd, Vec2 point)
+{
+    return abs((lineEnd.x - lineStart.x) * (lineStart.y - point.y) - (lineStart.x - point.x) * (lineEnd.y - lineStart.y)) / distance(lineEnd, lineStart);
+}
+
+PointMass *closestParticleToPoint(const Entity &entity, const Vec2 &point)
+{
+    // find closest point to mouse pointer
+    double currMinDistance = 999999;
+    PointMass *currClosestPoint = nullptr;
+    for (PointMass *p : entity.particles)
+    {
+        double currDistance = distance(p->position, point);
+        if (currDistance < currMinDistance)
+        {
+            currMinDistance = currDistance;
+            currClosestPoint = p;
+        }
+    }
+    return currClosestPoint;
+}
+
+void breakClosestLink(Entity &entity, const Vec2 &point)
+{
+
+    PointMass *closestPart = closestParticleToPoint(entity, point);
+    LinkConstraint *currClosestLink = nullptr;
+    double currMinLinkDistance = 9999999;
+
+    for (LinkConstraint *link : entity.linksForEachPointMass[closestPart])
+    {
+    
+        
+        double currLinkDistance = distanceOfPointToLine(link->partA_ptr->position, link->partB_ptr->position, point);
+        if (currMinLinkDistance > currLinkDistance)
+        {
+            currMinLinkDistance = currLinkDistance;
+            currClosestLink = link;
+        }
+    }
+    if (currClosestLink != nullptr)
+    {
+        currClosestLink->broken = true;
+    }
+}
+
 void drawCloth(sf::RenderWindow &window, Cloth &cloth, const double scaling)
 {
+    /*
     for (PointMass *p : cloth.particles)
     {
         sf::CircleShape circle;
@@ -74,10 +129,16 @@ void drawCloth(sf::RenderWindow &window, Cloth &cloth, const double scaling)
         circle.setPosition(p->position.x * scaling, p->position.y * scaling);
         window.draw(circle);
     }
+    */
 
     for (LinkConstraint *link : cloth.links)
     {
 
+        if (link->broken)
+        {
+            continue;
+        }
+        
         PointMass *p1 = link->partA_ptr;
         PointMass *p2 = link->partB_ptr;
         sf::Vertex line[] =

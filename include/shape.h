@@ -5,7 +5,6 @@ class Shape
 {
 public:
     PointMass point;
-    
 };
 
 class Circle : public Shape

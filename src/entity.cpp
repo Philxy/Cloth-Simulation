@@ -135,12 +135,9 @@ void Cloth::initParticlesAndLinks()
 // Initializes a map storing the point masses as keys and their links as data
 void Entity::initLinksForEachPointMass()
 {
-    for (PointMass *p : this->particles)
-    {
-        this->linksForEachPointMass[p];
-    }
     for (LinkConstraint *link : links)
     {
         (this->linksForEachPointMass[link->partA_ptr]).push_back(link);
+        (this->linksForEachPointMass[link->partB_ptr]).push_back(link);
     }
 }

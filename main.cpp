@@ -36,7 +36,9 @@ int main()
 
         sf::Time elapsed = clock.restart();
         dt = elapsed.asSeconds();
-        // std::cout << "FPS: " << 1 / dt << std::endl;
+        std::cout << "FPS: " << 1 / dt << std::endl;
+
+        dt = FIRST_TIME_STEP;
 
         sf::Event event;
         while (window.pollEvent(event))
@@ -53,7 +55,7 @@ int main()
                 break;
 
             case sf::Event::MouseButtonPressed:
-                breakClosestLink(cloth, Vec2{(double)event.mouseButton.x / scaling, (double)event.mouseButton.y / scaling});
+                breakClosestLink(cloth, Vec2{(double)event.mouseButton.x / (double)scaling, (double)event.mouseButton.y / (double)scaling});
                 break;
 
             case sf::Event::MouseWheelScrolled:
@@ -61,8 +63,7 @@ int main()
                 int mouseY;
                 mouseX = sf::Mouse::getPosition(window).x;
                 mouseY = sf::Mouse::getPosition(window).y;
-                breakClosestLink(cloth, Vec2{(double)mouseX / scaling, (double)mouseY / scaling});
-
+                breakClosestLink(cloth, Vec2{(double)mouseX / (double)scaling, (double)mouseY / (double)scaling});
                 break;
 
             default:

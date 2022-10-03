@@ -20,14 +20,12 @@ void applyDamping(LinkConstraint &link)
     PointMass *partA = (link.partA_ptr);
     PointMass *partB = (link.partB_ptr);
     double d = distance(partA, partB);
-    
-    
-    if ( link.restingDistance * BREAKING_THRESHOLD < d)
+
+    if (link.restingDistance * BREAKING_THRESHOLD < d)
     {
         link.broken = true;
         return;
     }
-    
 
     partA->acceleration.x -= (partA->position.x - partB->position.x) * (link.strength * (d - link.restingDistance) / d);
     partA->acceleration.y -= (partA->position.y - partB->position.y) * (link.strength * (d - link.restingDistance) / d);
@@ -77,9 +75,9 @@ double distanceOfPointToLine(Vec2 lineStart, Vec2 lineEnd, Vec2 point)
     return abs((lineEnd.x - lineStart.x) * (lineStart.y - point.y) - (lineStart.x - point.x) * (lineEnd.y - lineStart.y)) / distance(lineEnd, lineStart);
 }
 
+// find closest point to mouse pointer
 PointMass *closestParticleToPoint(const Entity &entity, const Vec2 &point)
 {
-    // find closest point to mouse pointer
     double currMinDistance = 999999;
     PointMass *currClosestPoint = nullptr;
     for (PointMass *p : entity.particles)
@@ -91,24 +89,38 @@ PointMass *closestParticleToPoint(const Entity &entity, const Vec2 &point)
             currClosestPoint = p;
         }
     }
+    std::cout << currClosestPoint << std::endl;
     return currClosestPoint;
+}
+
+// Return minimum distance between line segment vw and point p
+double minDistancePointToLineSegment(Vec2 v, Vec2 w, Vec2 p)
+{
+    double l = distance(v, w);
+    l *= l;
+    if (l == 0.0)
+        return distance(p, v);
+    const double t = std::max(0.0, std::min(1.0, ((p - v) * (w - v)) / l));
+    const Vec2 projection = v + t * (w - v);
+    return distance(p, projection);
 }
 
 void breakClosestLink(Entity &entity, const Vec2 &point)
 {
 
-    PointMass *closestPart = closestParticleToPoint(entity, point);
     LinkConstraint *currClosestLink = nullptr;
     double currMinLinkDistance = 9999999;
 
-    for (LinkConstraint *link : entity.linksForEachPointMass[closestPart])
+    for (LinkConstraint *link : entity.links)
     {
-    
-        
-        double currLinkDistance = distanceOfPointToLine(link->partA_ptr->position, link->partB_ptr->position, point);
-        if (currMinLinkDistance > currLinkDistance)
+        if (link->linkOrder != First)
         {
-            currMinLinkDistance = currLinkDistance;
+            continue;
+        }
+        double currDistance = minDistancePointToLineSegment(link->partB_ptr->position, link->partA_ptr->position, point);
+        if (currDistance < currMinLinkDistance)
+        {
+            currMinLinkDistance = currDistance;
             currClosestLink = link;
         }
     }
@@ -131,14 +143,52 @@ void drawCloth(sf::RenderWindow &window, Cloth &cloth, const double scaling)
     }
     */
 
+
+    // draws convex shapes to add lightning effect
+    for (auto const &x : cloth.linksForEachPointMass)
+    {
+        PointMass *p0 = x.first;
+        std::vector<LinkConstraint *> links = x.second;
+
+        sf::ConvexShape convex;
+        convex.setPointCount(3);
+
+        for (LinkConstraint *linkOuterLoop : links)
+        {
+            if (linkOuterLoop->linkOrder != First || linkOuterLoop->broken)
+            {
+                continue;
+            }
+            PointMass *p1 = (linkOuterLoop->partA_ptr == p0) ? linkOuterLoop->partB_ptr : linkOuterLoop->partA_ptr;
+            for (LinkConstraint *linkInnerLoop : links)
+            {
+                if (linkInnerLoop->linkOrder != First || linkInnerLoop == linkOuterLoop || linkInnerLoop->broken)
+                {
+                    continue;
+                }
+                PointMass *p2 = (linkInnerLoop->partA_ptr == p0) ? linkInnerLoop->partB_ptr : linkInnerLoop->partA_ptr;
+                convex.setPoint(0, sf::Vector2f(p0->position.x * scaling, p0->position.y * scaling));
+                convex.setPoint(1, sf::Vector2f(p1->position.x * scaling, p1->position.y * scaling));
+                convex.setPoint(2, sf::Vector2f(p2->position.x * scaling, p2->position.y * scaling));
+                //double area = .6 * abs((p0->position - grid.cells.at(idInner).particle.position.x) * (grid.cells.at(idOuter).particle.position.y - cell.particle.position.y) - (cell.particle.position.x - grid.cells.at(idOuter).particle.position.x) * (grid.cells.at(idInner).particle.position.y - cell.particle.position.y));
+
+                sf::Color color(255, 255, 255);
+                convex.setFillColor(color);
+                window.draw(convex);
+            }
+        }
+    }
+
+    return;
+
     for (LinkConstraint *link : cloth.links)
     {
 
-        if (link->broken)
+        if (link->broken || link->linkOrder != First)
         {
             continue;
         }
-        
+
         PointMass *p1 = link->partA_ptr;
         PointMass *p2 = link->partB_ptr;
         sf::Vertex line[] =

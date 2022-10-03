@@ -6,6 +6,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include "constants.h"
+#include <algorithm>
 
 double distance( PointMass *p1,  PointMass *p2);
 double distance( const Vec2 &v1, const Vec2 &v2);
@@ -17,6 +18,7 @@ void resolveCollision(PointMass &p1, PointMass &p2);
 
 class Entity;
 class Cloth;
+double minDistancePointToLineSegment(Vec2 v, Vec2 w, Vec2 p);
 void drawCloth(sf::RenderWindow &window, Cloth &cloth, const double scaling);
 double distanceOfPointToLine(Vec2 lineStart, Vec2 lineEnd, Vec2 point);
 void breakClosestLink(Entity &entity, const Vec2 &point);

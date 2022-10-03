@@ -22,7 +22,7 @@ void applyDamping(LinkConstraint &link)
     double d = distance(partA, partB);
     
     
-    if ( link.restingDistance * 10 < d)
+    if ( link.restingDistance * BREAKING_THRESHOLD < d)
     {
         link.broken = true;
         return;

@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include "include/entity.h"
 #include <algorithm>
+#include "include/constants.h"
 
 int main()
 {
@@ -10,32 +11,25 @@ int main()
     const int windowSizeY = 1000;
     // cloth parameters
     Cloth cloth;
-    cloth.width = 20;
-    cloth.height = 50;
-    cloth.restingDistance = 1;
-    const double scaling = std::max(windowSizeX, windowSizeY) / std::max(cloth.width, cloth.height) * 0.8;
-    cloth.topLeftX =  cloth.width* 0.15;
+    cloth.width = CLOTH_WIDTH;
+    cloth.height = CLOTH_HEIGHT;
+    cloth.restingDistance = RESTING_DISTANCE;
+    const double scaling = 0.8 * std::min(((double)windowSizeX) / cloth.width, ((double)windowSizeY) / cloth.height);
+    cloth.topLeftX = (1 - cloth.width * scaling / (double)windowSizeX) / 2.0 * windowSizeX / (double)scaling;
     cloth.topLeftY = 0;
-    cloth.linkStrengthFirstNeighbor = 200;
-    cloth.linkStrengthSecondNeighbor = 1;
-    cloth.linkStrengthThirdNeighbor = 1;
-
-
-
-    // simulatopn parameters
-    const double gravity = 10;
-    const double friction = .5;
-    double dt = 0.01;
-
-    
-
-    sf::RenderWindow window(sf::VideoMode(windowSizeX, windowSizeY), "SFML window");
-    sf::Clock clock;
+    cloth.linkStrengthFirstNeighbor = LINK_STRENGTH_FIRST_NEIGHBOR;
+    cloth.linkStrengthSecondNeighbor = LINK_STRENGTH_SECOND_NEIGHBOR;
+    cloth.linkStrengthThirdNeighbor = LINK_STRENGTH_THIRD_NEIGHBOR;
 
     cloth.initParticlesAndLinks();
     cloth.initLinksForEachPointMass();
-    cloth.applyForces(gravity, friction);
-    cloth.firstIntegration(dt);
+    cloth.applyForces(GRAVITY, FRICTION);
+    cloth.firstIntegration(FIRST_TIME_STEP);
+
+    double dt;
+
+    sf::RenderWindow window(sf::VideoMode(windowSizeX, windowSizeY), "SFML window");
+    sf::Clock clock;
 
     while (window.isOpen())
     {
@@ -43,7 +37,6 @@ int main()
         sf::Time elapsed = clock.restart();
         dt = elapsed.asSeconds();
         // std::cout << "FPS: " << 1 / dt << std::endl;
-        dt = 0.01;
 
         sf::Event event;
         while (window.pollEvent(event))
@@ -77,7 +70,7 @@ int main()
             }
         }
 
-        cloth.applyForces(gravity, friction);
+        cloth.applyForces(GRAVITY, FRICTION);
         cloth.update(dt);
 
         window.clear();

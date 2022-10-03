@@ -5,6 +5,7 @@
 #include "entity.h"
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include "constants.h"
 
 double distance( PointMass *p1,  PointMass *p2);
 double distance( const Vec2 &v1, const Vec2 &v2);

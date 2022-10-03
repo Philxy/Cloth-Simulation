@@ -143,8 +143,29 @@ void drawCloth(sf::RenderWindow &window, Cloth &cloth, const double scaling)
     }
     */
 
+   for (LinkConstraint *link : cloth.links)
+    {
+
+        if (link->broken || link->linkOrder != First)
+        {
+            continue;
+        }
+
+        PointMass *p1 = link->partA_ptr;
+        PointMass *p2 = link->partB_ptr;
+        sf::Vertex line[] =
+            {
+                sf::Vertex(sf::Vector2f(p1->position.x * scaling, p1->position.y * scaling)),
+                sf::Vertex(sf::Vector2f(p2->position.x * scaling, p2->position.y * scaling))};
+        line[0].color = (sf::Color(255,255,255));
+        line[1].color = (sf::Color(255,255,255));
+
+        window.draw(line, 2, sf::Lines);
+    }
+    return;
 
     // draws convex shapes to add lightning effect
+    /*
     for (auto const &x : cloth.linksForEachPointMass)
     {
         PointMass *p0 = x.first;
@@ -170,34 +191,17 @@ void drawCloth(sf::RenderWindow &window, Cloth &cloth, const double scaling)
                 convex.setPoint(0, sf::Vector2f(p0->position.x * scaling, p0->position.y * scaling));
                 convex.setPoint(1, sf::Vector2f(p1->position.x * scaling, p1->position.y * scaling));
                 convex.setPoint(2, sf::Vector2f(p2->position.x * scaling, p2->position.y * scaling));
-                //double area = .6 * abs((p0->position - grid.cells.at(idInner).particle.position.x) * (grid.cells.at(idOuter).particle.position.y - cell.particle.position.y) - (cell.particle.position.x - grid.cells.at(idOuter).particle.position.x) * (grid.cells.at(idInner).particle.position.y - cell.particle.position.y));
-
-                sf::Color color(255, 255, 255);
+                // double area = .6 * abs((p0->position - grid.cells.at(idInner).particle.position.x) * (grid.cells.at(idOuter).particle.position.y - cell.particle.position.y) - (cell.particle.position.x - grid.cells.at(idOuter).particle.position.x) * (grid.cells.at(idInner).particle.position.y - cell.particle.position.y));
+                double area = abs(.5 * (p0->position.x * p1->position.y - p1->position.x * p0->position.y - p2->position.x * p1->position.y - p0->position.x * p2->position.y + p1->position.x * p2->position.y + p2->position.x * p0->position.y));
+                double greyScale = area * .6 ;
+                sf::Color color(200 * (1 - greyScale), 200  * (1 - greyScale), 200 * (1 - greyScale));
                 convex.setFillColor(color);
                 window.draw(convex);
             }
         }
     }
+    */
 
-    return;
 
-    for (LinkConstraint *link : cloth.links)
-    {
-
-        if (link->broken || link->linkOrder != First)
-        {
-            continue;
-        }
-
-        PointMass *p1 = link->partA_ptr;
-        PointMass *p2 = link->partB_ptr;
-        sf::Vertex line[] =
-            {
-                sf::Vertex(sf::Vector2f(p1->position.x * scaling, p1->position.y * scaling)),
-                sf::Vertex(sf::Vector2f(p2->position.x * scaling, p2->position.y * scaling))};
-        line[0].color = (sf::Color(255, 255, 255));
-        line[1].color = (sf::Color(255, 255, 255));
-
-        window.draw(line, 2, sf::Lines);
-    }
+    
 }

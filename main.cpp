@@ -7,14 +7,14 @@
 int main()
 {
     // window size and rendering
-    const int windowSizeX = 1300;
-    const int windowSizeY = 1000;
+    const int windowSizeX = 1920;
+    const int windowSizeY = 1080;
     // cloth parameters
     Cloth cloth;
     cloth.width = CLOTH_WIDTH;
     cloth.height = CLOTH_HEIGHT;
     cloth.restingDistance = RESTING_DISTANCE;
-    const double scaling = 0.8 * std::min(((double)windowSizeX) / cloth.width, ((double)windowSizeY) / cloth.height);
+    const double scaling = 0.6 * std::min(((double)windowSizeX) / cloth.width, ((double)windowSizeY) / cloth.height);
     cloth.topLeftX = (1 - cloth.width * scaling / (double)windowSizeX) / 2.0 * windowSizeX / (double)scaling;
     cloth.topLeftY = 0;
     cloth.linkStrengthFirstNeighbor = LINK_STRENGTH_FIRST_NEIGHBOR;
@@ -29,6 +29,7 @@ int main()
     double dt;
 
     sf::RenderWindow window(sf::VideoMode(windowSizeX, windowSizeY), "SFML window");
+    
     sf::Clock clock;
 
     while (window.isOpen())
@@ -74,7 +75,7 @@ int main()
         cloth.applyForces(GRAVITY, FRICTION);
         cloth.update(dt);
 
-        window.clear();
+        window.clear(sf::Color(0, 0, 0));
         drawCloth(window, cloth, scaling);
         window.display();
     }

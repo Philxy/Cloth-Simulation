@@ -29,22 +29,20 @@ int main()
     double dt;
 
     sf::RenderWindow window(sf::VideoMode(windowSizeX, windowSizeY), "SFML window");
-    
+
     sf::Clock clock;
 
     while (window.isOpen())
     {
-
         sf::Time elapsed = clock.restart();
         dt = elapsed.asSeconds();
-        std::cout << "FPS: " << 1 / dt << std::endl;
+        // std::cout << "FPS: " << 1 / dt << std::endl;
 
         dt = FIRST_TIME_STEP;
 
         sf::Event event;
         while (window.pollEvent(event))
         {
-
             switch (event.type)
             {
 
@@ -52,19 +50,21 @@ int main()
                 window.close();
                 break;
 
-            case sf::Event::KeyPressed:
-                break;
-
             case sf::Event::MouseButtonPressed:
-                breakClosestLink(cloth, Vec2{(double)event.mouseButton.x / (double)scaling, (double)event.mouseButton.y / (double)scaling});
-                break;
 
-            case sf::Event::MouseWheelScrolled:
-                int mouseX;
-                int mouseY;
-                mouseX = sf::Mouse::getPosition(window).x;
-                mouseY = sf::Mouse::getPosition(window).y;
-                breakClosestLink(cloth, Vec2{(double)mouseX / (double)scaling, (double)mouseY / (double)scaling});
+                while (event.type != sf::Event::MouseButtonReleased)
+                {
+                    window.pollEvent(event);
+                    int mouseX = sf::Mouse::getPosition(window).x;
+                    int mouseY = sf::Mouse::getPosition(window).y;
+                    breakClosestLink(cloth, Vec2{(double)mouseX / (double)scaling, (double)mouseY / (double)scaling});
+                    cloth.applyForces(GRAVITY, FRICTION);
+                    cloth.update(dt);
+
+                    window.clear(sf::Color(0, 0, 0));
+                    drawCloth(window, cloth, scaling);
+                    window.display();
+                }
                 break;
 
             default:

@@ -36,5 +36,5 @@ public:
     ~Cloth();
 
     void initParticlesAndLinks();
-    void applyForces(const double gravity, const double friction);
+    void applyForces( double gravity,  double friction, double windForce);
 };

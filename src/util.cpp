@@ -33,12 +33,26 @@ void applyDamping(LinkConstraint &link)
     partB->acceleration.y -= (partB->position.y - partA->position.y) * (link.strength * (d - link.restingDistance) / d);
 }
 
+
+void applyWindForce(PointMass &p, double windForce)
+{
+    p.acceleration.x += windForce;
+    p.acceleration.y += windForce / 10;
+}
+
 bool approaching(const PointMass &p1, const PointMass &p2)
 {
     Vec2 r21 = p2.position - p1.position;
     Vec2 v12 = p1.velocity - p2.velocity;
     return r21 * v12 > 0;
 }
+
+double dRand(double dMin, double dMax)
+{
+    double d = (double)rand() / RAND_MAX;
+    return dMin + d * (dMax - dMin);
+}
+
 
 void resolveCollision(PointMass &p1, PointMass &p2)
 {

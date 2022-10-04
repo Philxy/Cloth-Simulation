@@ -25,7 +25,7 @@ void Entity::firstIntegration(double dt)
     }
 }
 
-void Cloth::applyForces(const double gravity, const double friction)
+void Cloth::applyForces( double gravity,  double friction, double windForce)
 {
     for (PointMass *p : this->particles)
     {
@@ -33,6 +33,8 @@ void Cloth::applyForces(const double gravity, const double friction)
         p->acceleration.y = 0;
         applyGravity(*p, gravity);
         applyAirFriction(*p, friction);
+        applyWindForce(*p, windForce);
+
     }
 
     for (LinkConstraint *link : this->links)

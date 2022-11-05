@@ -8,7 +8,5 @@ Visualized with the SFML graphics library.
 ![gif](demo.gif)
 
 **Exemplary animation with shading**:
-
-<p align="center">
 ![gif](cloth-sim.gif)
-</p>
+

@@ -1,4 +1,4 @@
-Basic real-time cloth simulation using Verlet integration. 
+Basic real-time interactive cloth simulation using Verlet integration. 
 
 Visualized with the SFML graphics library.
 
